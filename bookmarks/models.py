@@ -458,6 +458,10 @@ class UserProfile(models.Model):
     collapse_side_panel = models.BooleanField(default=False, null=False)
     hide_bundles = models.BooleanField(default=False, null=False)
     legacy_search = models.BooleanField(default=False, null=False)
+    enable_tag_recommendation = models.BooleanField(default=True, null=False)
+    tag_recommendation_count = models.IntegerField(
+        null=False, default=5, validators=[MinValueValidator(1)]
+    )
 
     def save(self, *args, **kwargs):
         if self.custom_css:

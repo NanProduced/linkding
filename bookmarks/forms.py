@@ -335,6 +335,8 @@ class UserProfileForm(forms.ModelForm):
             "collapse_side_panel",
             "hide_bundles",
             "legacy_search",
+            "enable_tag_recommendation",
+            "tag_recommendation_count",
         ]
         widgets = {
             "theme": FormSelect,
@@ -365,6 +367,8 @@ class UserProfileForm(forms.ModelForm):
             "enable_automatic_html_snapshots": FormCheckbox,
             "default_mark_unread": FormCheckbox,
             "default_mark_shared": FormCheckbox,
+            "enable_tag_recommendation": FormCheckbox,
+            "tag_recommendation_count": FormNumberInput,
         }
 
 

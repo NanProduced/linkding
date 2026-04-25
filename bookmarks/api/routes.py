@@ -26,7 +26,7 @@ from bookmarks.models import (
     Tag,
     User,
 )
-from bookmarks.services import assets, auto_tagging, bookmarks, bundles, website_loader
+from bookmarks.services import assets, auto_tagging, bookmarks, bundles, tag_recommendation, website_loader
 from bookmarks.type_defs import HttpRequest
 from bookmarks.views import access
 
@@ -126,11 +126,30 @@ class BookmarkViewSet(
                     exc_info=e,
                 )
 
+        # Generate recommended tags based on TF-IDF
+        recommended_tags = []
+        if profile.enable_tag_recommendation:
+            try:
+                title = metadata.title or ""
+                description = metadata.description or ""
+                recommended_tags = tag_recommendation.recommend_tags(
+                    title,
+                    description,
+                    request.user,
+                    profile.tag_recommendation_count
+                )
+            except Exception as e:
+                logger.error(
+                    f"Failed to generate recommended tags. url={url}",
+                    exc_info=e,
+                )
+
         return Response(
             {
                 "bookmark": existing_bookmark_data,
                 "metadata": metadata.to_dict(),
                 "auto_tags": auto_tags,
+                "recommended_tags": recommended_tags,
             },
             status=status.HTTP_200_OK,
         )
