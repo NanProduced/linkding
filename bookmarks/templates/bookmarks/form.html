@@ -23,6 +23,7 @@
       If a tag does not exist it will be automatically created.
     {% endformhelp %}
     <div class="form-input-hint auto-tags"></div>
+    <div class="form-input-hint recommended-tags" style="display: none;"></div>
   </div>
   <div class="form-group">
     <div class="d-flex justify-between align-baseline">
@@ -125,6 +126,58 @@
         input.checked = value;
       }
 
+      function getCurrentTags() {
+        const tagsInput = document.getElementById('{{ form.tag_string.id_for_label }}');
+        if (!tagsInput || !tagsInput.value) {
+          return [];
+        }
+        return tagsInput.value.split(/\s+/).filter(tag => tag.trim() !== '');
+      }
+
+      function addTag(tagName) {
+        const tagsInput = document.getElementById('{{ form.tag_string.id_for_label }}');
+        if (!tagsInput) {
+          return;
+        }
+
+        const currentTags = getCurrentTags();
+        if (!currentTags.includes(tagName)) {
+          currentTags.push(tagName);
+          tagsInput.value = currentTags.join(' ');
+          tagsInput.dispatchEvent(new Event('value-changed'));
+        }
+      }
+
+      function createRecommendedTagElement(tagName) {
+        const span = document.createElement('span');
+        span.className = 'recommended-tag';
+        span.textContent = tagName;
+        span.style.cssText = `
+          display: inline-block;
+          padding: 2px 8px;
+          margin: 2px 4px 2px 0;
+          background-color: var(--form-input-bg);
+          border: 1px solid var(--form-input-border);
+          border-radius: 4px;
+          cursor: pointer;
+          font-size: 0.9em;
+          transition: all 0.2s ease;
+        `;
+        span.addEventListener('mouseenter', function() {
+          this.style.backgroundColor = 'var(--form-input-focus-border)';
+          this.style.color = 'white';
+        });
+        span.addEventListener('mouseleave', function() {
+          this.style.backgroundColor = 'var(--form-input-bg)';
+          this.style.color = 'inherit';
+        });
+        span.addEventListener('click', function() {
+          addTag(tagName);
+          this.style.display = 'none';
+        });
+        return span;
+      }
+
       function checkUrl() {
         if (!urlInput.value) {
           return;
@@ -179,6 +232,30 @@
               autoTagsHint.innerHTML = `Auto tags: ${autoTags.join(" ")}`;
             } else {
               autoTagsHint.style['display'] = 'none';
+            }
+
+            // Show recommended tags
+            const recommendedTags = data.recommended_tags || [];
+            const recommendedTagsHint = document.querySelector('.form-input-hint.recommended-tags');
+
+            if (recommendedTags.length > 0) {
+              recommendedTagsHint.style['display'] = 'block';
+              recommendedTagsHint.innerHTML = '';
+
+              const label = document.createElement('span');
+              label.style.cssText = 'margin-right: 8px; color: var(--text-muted);';
+              label.textContent = 'Recommended tags:';
+              recommendedTagsHint.appendChild(label);
+
+              const currentTags = getCurrentTags();
+              recommendedTags.forEach(tag => {
+                if (!currentTags.includes(tag)) {
+                  const tagElement = createRecommendedTagElement(tag);
+                  recommendedTagsHint.appendChild(tagElement);
+                }
+              });
+            } else {
+              recommendedTagsHint.style['display'] = 'none';
             }
           });
       }

@@ -149,6 +149,23 @@ reddit.com/r/Music music reddit</pre>
           {% endformhelp %}
         </div>
         <div class="form-group">
+          {% formfield form.enable_tag_recommendation label="Enable Tag Recommendation" has_help=True %}
+          {% formhelp form.enable_tag_recommendation %}
+            When enabled, the system will analyze the title and description of new bookmarks
+            and recommend relevant tags based on your existing tag library using TF-IDF algorithm.
+            The recommended tags will be displayed in the bookmark form for you to select.
+          {% endformhelp %}
+        </div>
+        <div class="form-group">
+          {% formlabel form.tag_recommendation_count "Tag Recommendation Count" %}
+          {% formfield form.tag_recommendation_count has_help=True class="width-25 width-sm-100" min="1" %}
+          {{ form.tag_recommendation_count.errors }}
+          {% formhelp form.tag_recommendation_count %}
+            The maximum number of recommended tags to display when adding a new bookmark.
+            Default is 5.
+          {% endformhelp %}
+        </div>
+        <div class="form-group">
           {% formfield form.enable_favicons label="Enable Favicons" has_help=True %}
           {% formhelp form.enable_favicons %}
             Automatically loads favicons for bookmarked websites and displays them next to each bookmark.
