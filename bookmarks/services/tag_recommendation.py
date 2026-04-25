@@ -48,17 +48,17 @@ def tokenize(text: str) -> list[str]:
         'say', 'saying', 'said', 'way', 'thing', 'time', 'man', 'woman', 'world',
         'life', 'hand', 'part', 'child', 'eye', 'woman', 'man', 'place', 'case',
         'week', 'company', 'system', 'program', 'question', 'work', 'government',
-        'number', 'night', 'point', 'home', 'water', 'room', 'mother', 'area',
-        'money', 'story', 'fact', 'month', 'lot', 'right', 'study', 'book',
+        'number', 'night', 'point', 'home', 'water', 'room', 'mother',
+        'fact', 'month', 'lot', 'right', 'study', 'book',
         'eye', 'job', 'word', 'business', 'issue', 'side', 'kind', 'four',
-        'head', 'house', 'service', 'friend', 'father', 'power', 'hour', 'game',
+        'house', 'service', 'friend', 'father', 'power', 'hour',
         'line', 'end', 'member', 'law', 'car', 'city', 'community', 'name',
         'team', 'minute', 'idea', 'kid', 'body', 'information', 'back', 'parent',
         'face', 'others', 'level', 'office', 'door', 'health', 'person', 'art',
         'war', 'history', 'party', 'result', 'change', 'morning', 'reason',
         'research', 'girl', 'guy', 'moment', 'air', 'teacher', 'force', 'education',
-        'foot', 'boy', 'age', 'policy', 'process', 'music', 'market', 'kind',
-        'loss', 'value', 'interest', 'care', 'people', 'state', 'country'
+        'foot', 'boy', 'age', 'policy', 'process', 'music', 'market',
+        'loss', 'value', 'interest', 'care', 'people', 'state'
     }
     return [token for token in tokens if token not in stop_words]
 
@@ -117,7 +117,7 @@ def map_tokens_to_tags(tokens: list[str], existing_tags: list[str]) -> dict[str,
     for token in tokens:
         matching_tags = []
         for tag in existing_tags:
-            if token == tag or tag.startswith(token) or token.startswith(tag):
+            if token == tag:
                 matching_tags.append(tag)
         if matching_tags:
             token_to_tags[token] = matching_tags
@@ -169,10 +169,8 @@ def recommend_tags(
             for tag in token_to_tags[token]:
                 tag_scores[tag] += score
     
-    for doc in corpus:
-        for tag in doc['tags']:
-            if tag in tag_scores:
-                tag_scores[tag] += 0.1
+    for tag in existing_tags:
+        tag_scores[tag] += 0.1
     
     recommended = [tag for tag, _ in tag_scores.most_common(count)]
     
